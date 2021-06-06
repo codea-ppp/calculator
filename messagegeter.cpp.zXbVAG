@@ -1,0 +1,328 @@
+#include "messagegeter.h"
+#include "QPushButton"
+
+MessageGeter::MessageGeter(QWidget *parent) : QWidget(parent)
+{
+    leftBracketCount = 0;
+
+    newNumber = true;
+
+    container = new(std::nothrow) MyArray();
+    if (nullptr == container)
+        abort();
+}
+
+bool MessageGeter::analyzeData(QString data)
+{
+    if ('s' == data[11] && 'c' == data[12] && 'i' == data[13] &&
+            'e' == data[14] && 'n' == data[15] && 'c' == data[16] && 'e' == data[17])
+    {
+        if ('0' == data[19] || '1' == data[19])
+        {
+            emit myBlockScienceLeftBracketSender();
+
+            if (!!leftBracketCount)
+                emit myAllowScienceRightBracketSender();
+            else
+                emit myBlockScienceRightBracketSender();
+
+            emit myAllowScienceOneOperandsOperatorsSender();
+
+            if (newNumber)
+                emit myAllowScienceNodeSender();
+            newNumber = false;
+
+            emit myAllowScienceTwoOperandsOperatorsSender();
+
+            emit myAllowScienceNumbersSender();
+        }
+        else if (('2' == data[19] &&
+                 ('0' == data[20] || '1' == data[20] || '2' == data[20] || '3' == data[20] || '4' == data[20])) ||
+                 ('3' == data[19] &&
+                  ('6' == data[20] || '7' == data[20] || '8' == data[20])))
+        {
+            emit myBlockScienceNodeSender();
+
+            emit myAllowScienceLeftBracketSender();
+
+            emit myAllowScienceNumbersSender();
+            newNumber = true;
+
+            emit myBlockScienceRightBracketSender();
+
+            emit myBlockScienceOneOperandsOperatorsSender();
+
+            emit myBlockScienceTwoOperandsOperatorsSender();
+        }
+        else if ('9' == data[19] && '2' == data[20])
+        {
+            emit myAllowScienceLeftBracketSender();
+            newNumber = true;
+
+            if (!!leftBracketCount)
+                emit myAllowScienceRightBracketSender();
+            else
+                emit myBlockScienceRightBracketSender();
+
+            emit myAllowScienceNumbersSender();
+
+            emit myBlockScienceOneOperandsOperatorsSender();
+
+            emit myBlockScienceTwoOperandsOperatorsSender();
+
+            emit myBlockScienceNodeSender();
+        }
+        else if ('9' == data[19] && '3' == data[20])
+        {
+            if (--leftBracketCount)
+                emit myAllowScienceRightBracketSender();
+            else
+                emit myBlockScienceRightBracketSender();
+
+            emit myAllowScienceLeftBracketSender();
+
+            if (!leftBracketCount)
+                emit myAllowScienceOneOperandsOperatorsSender();
+            else
+                emit myBlockScienceOneOperandsOperatorsSender();
+
+            emit myAllowScienceTwoOperandsOperatorsSender();
+
+            emit myAllowScienceNumbersSender();
+            newNumber = true;
+
+            emit myBlockScienceNodeSender();
+        }
+        else if ('9' == data[19] && '4' == data[20])
+        {
+            emit myAllowScienceNumbersSender();
+            newNumber = false;
+
+            emit myBlockScienceLeftBracketSender();
+
+            emit myBlockScienceRightBracketSender();
+
+            emit myBlockScienceOneOperandsOperatorsSender();
+
+            emit myBlockScienceTwoOperandsOperatorsSender();
+        }
+        else if ('3' == data[19] &&
+                 ('0' == data[20] || '1' == data[20] || '2' == data[20]
+                  || '3' == data[20] || '4' == data[20] || '5' == data[20]))
+        {
+            emit myAllowScienceOneOperandsOperatorsSender();
+
+            emit myBlockScienceNumbersSender();
+            newNumber = false;
+
+            if (leftBracketCount)
+                emit myAllowScienceRightBracketSender();
+            else
+                emit myBlockScienceRightBracketSender();
+
+            emit myBlockScienceNodeSender();
+
+            emit myBlockScienceLeftBracketSender();
+
+            emit myAllowScienceTwoOperandsOperatorsSender();
+
+            return true;
+        }
+    }
+    else if ('p' == data[11] && 'r' == data[12] && 'o' == data[13] &&
+             'g' == data[14] && 'r' == data[15] && 'a' == data[16] && 'm' == data[17])
+    {
+        if ('0' == data[19] || '1' == data[19])
+        {
+            emit myBlockProgramLeftBracketSender();
+
+            if (!!leftBracketCount)
+                emit myAllowProgramRightBracketSender();
+            else
+                emit myBlockProgramRightBracketSender();
+
+            emit myAllowProgramOneOperandsOperatorsSender();
+
+            if (newNumber)
+                emit myAllowProgramNodeSender();
+            newNumber = false;
+
+            emit myAllowProgramTwoOperandsOperatorsSender();
+
+            emit myAllowProgramNumbersSender();
+        }
+        else if (('2' == data[19] &&
+                 ('0' == data[20] || '1' == data[20] || '2' == data[20] || '3' == data[20] || '4' == data[20])) ||
+                 ('3' == data[19] &&
+                  ('0' == data[20] || '1' == data[20] || '2' == data[20] || '3' == data[20])))
+        {
+            emit myBlockProgramNodeSender();
+
+            emit myAllowProgramLeftBracketSender();
+
+            emit myAllowProgramNumbersSender();
+            newNumber = true;
+
+            emit myBlockProgramRightBracketSender();
+
+            emit myBlockProgramOneOperandsOperatorsSender();
+
+            emit myBlockProgramTwoOperandsOperatorsSender();
+        }
+        else if ('9' == data[19] && '2' == data[20])
+        {
+            emit myAllowProgramLeftBracketSender();
+            newNumber = true;
+
+            if (!!leftBracketCount)
+                emit myAllowProgramRightBracketSender();
+            else
+                emit myBlockProgramRightBracketSender();
+
+            emit myAllowProgramNumbersSender();
+
+            emit myBlockProgramOneOperandsOperatorsSender();
+
+            emit myBlockProgramTwoOperandsOperatorsSender();
+
+            emit myBlockProgramNodeSender();
+        }
+        else if ('9' == data[19] && '3' == data[20])
+        {
+            if (--leftBracketCount)
+                emit myAllowProgramRightBracketSender();
+            else
+                emit myBlockProgramRightBracketSender();
+
+            emit myAllowProgramLeftBracketSender();
+
+            if (!leftBracketCount)
+                emit myAllowProgramOneOperandsOperatorsSender();
+            else
+                emit myBlockProgramOneOperandsOperatorsSender();
+
+            emit myAllowProgramTwoOperandsOperatorsSender();
+
+            emit myAllowProgramNumbersSender();
+            newNumber = true;
+
+            emit myBlockProgramNodeSender();
+        }
+        else if ('9' == data[19] && '4' == data[20])
+        {
+            emit myAllowProgramNumbersSender();
+            newNumber = false;
+
+            emit myBlockProgramLeftBracketSender();
+
+            emit myBlockProgramRightBracketSender();
+
+            emit myBlockProgramOneOperandsOperatorsSender();
+
+            emit myBlockProgramTwoOperandsOperatorsSender();
+        }
+        else if ('3' == data[19] &&
+                 ('3' == data[20] || '4' == data[20] || '5' == data[20]
+                  || '6' == data[20] || '7' == data[20]))
+        {
+            emit myAllowProgramOneOperandsOperatorsSender();
+
+            emit myBlockProgramNumbersSender();
+            newNumber = false;
+
+            if (leftBracketCount)
+                emit myAllowProgramRightBracketSender();
+            else
+                emit myBlockProgramRightBracketSender();
+
+            emit myBlockProgramNodeSender();
+
+            emit myBlockProgramLeftBracketSender();
+
+            emit myAllowProgramTwoOperandsOperatorsSender();
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void MessageGeter::getMessage()
+{
+    QPushButton* pressedButton = static_cast<QPushButton*>(sender());
+    QString data = pressedButton->objectName();
+
+    if ('9' == data[19] && '0' == data[20])
+        container->clear();
+
+    if ('9' == data[19] && '2' == data[20])
+        leftBracketCount++;
+
+    container->addRear(data);
+
+    analyzeData(data);
+}
+
+MessageGeter::~MessageGeter()
+{
+    delete container;
+}
+
+/*
+void MessageGeter::myBlockScienceNumbersSender() {}
+
+void MessageGeter::myBlockScienceOneOperandsOperatorsSender() {}
+
+void MessageGeter::myBlockScienceTwoOperandsOperatorsSender() {}
+
+void MessageGeter::myBlockScienceLeftBracketSender() {}
+
+void MessageGeter::myBlockScienceRightBracketSender() {}
+
+void MessageGeter::myBlockScienceNodeSender() {}
+
+void MessageGeter::myBlockScienceBackSender() {}
+
+void MessageGeter::myAllowScienceNumbersSender() {}
+
+void MessageGeter::myAllowScienceOneOperandsOperatorsSender() {}
+
+void MessageGeter::myAllowScienceTwoOperandsOperatorsSender() {}
+
+void MessageGeter::myAllowScienceLeftBracketSender() {}
+
+void MessageGeter::myAllowScienceRightBracketSender() {}
+
+void MessageGeter::myAllowScienceNodeSender() {}
+
+void MessageGeter::myAllowScienceBackSender() {}
+
+void MessageGeter::myBlockProgramNumbersSender() {}
+
+void MessageGeter::myBlockProgramOneOperandsOperatorsSender() {}
+
+void MessageGeter::myBlockProgramTwoOperandsOperatorsSender() {}
+
+void MessageGeter::myBlockProgramLeftBracketSender() {}
+
+void MessageGeter::myBlockProgramRightBracketSender() {}
+
+void MessageGeter::myBlockProgramNodeSender() {}
+
+void MessageGeter::myBlockProgramBackSender() {}
+
+void MessageGeter::myAllowProgramNumbersSender() {}
+
+void MessageGeter::myAllowProgramOneOperandsOperatorsSender() {}
+
+void MessageGeter::myAllowProgramTwoOperandsOperatorsSender() {}
+
+void MessageGeter::myAllowProgramLeftBracketSender() {}
+
+void MessageGeter::myAllowProgramRightBracketSender() {}
+
+void MessageGeter::myAllowProgramNodeSender() {}
+
+void MessageGeter::myAllowProgramBackSender() {}
+*/
